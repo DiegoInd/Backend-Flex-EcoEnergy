@@ -1,0 +1,5 @@
+[
+  { "id": 1, "nombre": "Planta Norte", "limite_kwh": 500.0 },
+  { "id": 2, "nombre": "Oficinas Centrales", "limite_kwh": 150.0 },
+  { "id": 3, "nombre": "Bodega Sur", "limite_kwh": 300.0 }
+]

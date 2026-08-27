@@ -1,15 +1,9 @@
 from django.urls import path
+from django.shortcuts import redirect
 from . import views
 
-app_name = "dispositivos"
-
 urlpatterns = [
-    path("", views.inicio, name="inicio"),
-    path(
-    "zonas/<int:zona_id>/dispositivos/",
-    views.dispositivos_zona2,
-    name="por_zona",
-),
-    path("dispositivos/", views.catalogo, name="catalogo")
+    path('', lambda request: redirect('zonas/')), # Si entra a la raíz, redirige a /zonas/
+    path('zonas/', views.listado_zonas, name='listado_zonas'),
+    path('zonas/<int:zona_id>/', views.detalle_zona, name='detalle_zona'),
 ]
-
