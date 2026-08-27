@@ -57,3 +57,63 @@ def detalle_zona(request, zona_id):
     }
 
     return render(request, 'dispositivos/detalle_zona.html', contexto)
+
+
+# -------------------------------------------------------------------
+# FASE 2: Nueva función agregada
+# -------------------------------------------------------------------
+def resumen_zonas(request):
+    zonas_data = cargar_json('zonas.json')
+    dispositivos_data = cargar_json('dispositivos.json')
+
+    # Agrupar dispositivos por zona_id
+    dispositivos_por_zona = {}
+    for dev in dispositivos_data:
+        z_id = dev.get('zona_id') or dev.get('id_zona')
+        if z_id not in dispositivos_por_zona:
+            dispositivos_por_zona[z_id] = []
+        dispositivos_por_zona[z_id].append(dev)
+
+    resumen_list = []
+    consumo_total_global = 0.0
+
+    for zona in zonas_data:
+        z_id = zona.get('id')
+        nombre = zona.get('nombre', 'Sin Nombre')
+        limite_kwh = float(zona.get('limite_kwh', 0.0))
+
+        devs_asociados = dispositivos_por_zona.get(z_id, [])
+        cant_dispositivos = len(devs_asociados)
+        consumo_total = sum(float(d.get('consumo_kwh', 0.0)) for d in devs_asociados)
+
+        consumo_total_global += consumo_total
+
+        # Regla de negocio de la Fase 2
+        if consumo_total <= limite_kwh:
+            estado_texto = "DENTRO DEL LÍMITE"
+            estado_badge_class = "bg-success"
+            estado_icono = "bi-check-circle-fill"
+        else:
+            estado_texto = "LÍMITE SUPERADO"
+            estado_badge_class = "bg-danger"
+            estado_icono = "bi-exclamation-triangle-fill"
+
+        resumen_list.append({
+            'id': z_id,
+            'nombre': nombre,
+            'cantidad_dispositivos': cant_dispositivos,
+            'consumo_total': consumo_total,
+            'limite_kwh': limite_kwh,
+            'estado_texto': estado_texto,
+            'estado_badge_class': estado_badge_class,
+            'estado_icono': estado_icono,
+        })
+
+    context = {
+        'total_zonas': len(zonas_data),
+        'total_dispositivos': len(dispositivos_data),
+        'consumo_total_global': consumo_total_global,
+        'resumen_zonas': resumen_list,
+    }
+
+    return render(request, 'dispositivos/resumenes-zonas.html', context)
