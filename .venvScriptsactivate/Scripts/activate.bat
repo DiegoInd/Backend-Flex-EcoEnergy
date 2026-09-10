@@ -8,15 +8,15 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\claseslab7\Backend-Flex-EcoEnergy\.venvScriptsactivate
+set "VIRTUAL_ENV=C:\Users\claseslab7\Backend-Flex-EcoEnergy\.venvScriptsactivate"
 
 if not defined PROMPT set PROMPT=$P$G
 
 if defined _OLD_VIRTUAL_PROMPT set PROMPT=%_OLD_VIRTUAL_PROMPT%
 if defined _OLD_VIRTUAL_PYTHONHOME set PYTHONHOME=%_OLD_VIRTUAL_PYTHONHOME%
 
-set _OLD_VIRTUAL_PROMPT=%PROMPT%
-set PROMPT=(.venvScriptsactivate) %PROMPT%
+set "_OLD_VIRTUAL_PROMPT=%PROMPT%"
+set "PROMPT=(.venvScriptsactivate) %PROMPT%"
 
 if defined PYTHONHOME set _OLD_VIRTUAL_PYTHONHOME=%PYTHONHOME%
 set PYTHONHOME=
@@ -24,8 +24,8 @@ set PYTHONHOME=
 if defined _OLD_VIRTUAL_PATH set PATH=%_OLD_VIRTUAL_PATH%
 if not defined _OLD_VIRTUAL_PATH set _OLD_VIRTUAL_PATH=%PATH%
 
-set PATH=%VIRTUAL_ENV%\Scripts;%PATH%
-set VIRTUAL_ENV_PROMPT=(.venvScriptsactivate) 
+set "PATH=%VIRTUAL_ENV%\Scripts;%PATH%"
+set "VIRTUAL_ENV_PROMPT=.venvScriptsactivate"
 
 :END
 if defined _OLD_CODEPAGE (
