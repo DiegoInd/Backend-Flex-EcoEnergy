@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Organization, Department
+from .models import Organization, Department, UserProfile
 
 
 @admin.register(Organization)
@@ -55,4 +55,33 @@ class DepartmentAdmin(admin.ModelAdmin):
 
     list_select_related = (
         "organization",
+    )
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "organization",
+        "department",
+        "employee_code",
+        "phone",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+        "employee_code",
+    )
+
+    list_filter = (
+        "organization",
+        "department",
+    )
+
+    list_select_related = (
+        "user",
+        "organization",
+        "department",
     )
