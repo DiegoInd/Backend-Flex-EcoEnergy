@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
-from django.contrib import admin
+from accounts.models import UserProfile
+from devices.models import InstalledDevice
 from .models import EnergyMeasurement
 
 
@@ -39,3 +39,36 @@ class EnergyMeasurementAdmin(admin.ModelAdmin):
     )
 
     date_hierarchy = "reading_timestamp"
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        if request.user.is_superuser:
+            return qs
+
+        try:
+            organization = request.user.profile.organization
+        except UserProfile.DoesNotExist:
+            return qs.none()
+
+        return qs.filter(device__organization=organization)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:
+            try:
+                organization = request.user.profile.organization
+
+                if db_field.name == "device":
+                    kwargs["queryset"] = InstalledDevice.objects.filter(
+                        organization=organization
+                    )
+
+            except UserProfile.DoesNotExist:
+                if db_field.name == "device":
+                    kwargs["queryset"] = InstalledDevice.objects.none()
+
+        return super().formfield_for_foreignkey(
+            db_field,
+            request,
+            **kwargs
+        )

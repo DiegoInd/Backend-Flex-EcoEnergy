@@ -1,61 +1,222 @@
-Backend-Flex-EcoEnergy
-Descripción y Objetivo
-Este repositorio contiene el desarrollo del Back End para Flex-EcoEnergy, un proyecto que se encuentra en su fase inicial de configuración y estructuración. El objetivo principal de este componente es proveer la lógica de servidor, la gestión de datos y las APIs necesarias para soportar las funcionalidades ecológicas y energéticas del sistema utilizando Django.
+# Backend-Flex-EcoEnergy
 
-Requisitos Previos
-Asegúrate de contar con las siguientes herramientas instaladas en tu sistema antes de continuar:
+## Descripción
 
-Python (versión 3.12.3 recomendada)
+EcoEnergy es una aplicación desarrollada con Django para administrar organizaciones, departamentos, zonas, dispositivos, mediciones de energía y solicitudes de mantenimiento.
 
-Git
---------------------------------------------------------------------------------------------
-Clonación del Repositorio
-Para clonar el proyecto en tu máquina local, abre tu terminal y ejecuta el siguiente comando:
+El proyecto utiliza Django Admin como interfaz de administración y aplica permisos y restricciones de acceso según la organización del usuario.
 
+---
 
+## Requisitos
+
+- Python 3.12 o superior
+- Git
+- pip
+
+---
+
+## 1. Clonar el repositorio
+
+```bash
 git clone https://github.com/DiegoInd/Backend-Flex-EcoEnergy.git
 cd Backend-Flex-EcoEnergy
+```
 
----------------------------------------------------------------------------------------------
-Creación y Activación del Entorno Virtual (.venv)
-Es una buena práctica aislar las dependencias del proyecto utilizando un entorno virtual.
+---
 
-En macOS y Linux:
+## 2. Crear entorno virtual
 
+### Windows
+
+```bash
+python -m venv .venv
+```
+
+Activar:
+
+```bash
+.venv\Scripts\activate
+```
+
+### macOS / Linux
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-En Windows (Command Prompt / PowerShell):
+```
 
-python -m venv .venv
-.venv\Scripts\activate
+---
 
-------------------------------------------------------------------------------------------------
-Instalación de Dependencias
-Una vez activado el entorno virtual, instala las dependencias del proyecto listadas en el archivo requirements.txt:
+## 3. Instalar dependencias
 
-Bash
+```bash
 pip install -r requirements.txt
+```
 
--------------------------------------------------------------------------------------------------
-Comandos de Verificación
-Para verificar que el entorno y el proyecto estén configurados correctamente, puedes ejecutar las siguientes comprobaciones de Django:
+---
 
-Bash
+## 4. Configurar variables de entorno
+
+Crear un archivo llamado:
+
+```text
+.env
+```
+
+Se puede utilizar `.env.example` como referencia.
+
+Ejemplo:
+
+```env
+SECRET_KEY=django-insecure-ecoenergy-desarrollo
+DB_ENGINE=django.db.backends.sqlite3
+DB_NAME=db.sqlite3
+```
+
+El archivo `.env` no debe subirse al repositorio.
+
+---
+
+## 5. Aplicar migraciones
+
+```bash
+python manage.py migrate
+```
+
+Comprobar que el proyecto no tenga errores:
+
+```bash
 python manage.py check
+```
 
-iniciar el servidor de desarrollo localmente para comprobar que todo arranca de forma adecuada:
+---
 
-Bash
+## 6. Cargar datos de prueba
+
+El proyecto incluye un Management Command que genera automáticamente los datos necesarios para la demostración.
+
+Ejecutar:
+
+```bash
+python manage.py seed_demo
+```
+
+Este comando crea organizaciones, departamentos, zonas, dispositivos, mediciones, mantenimientos, grupos, permisos y usuarios de prueba.
+
+También genera información perteneciente a EcoEnergy Chile y EcoEnergy Norte para comprobar el scoping por organización.
+
+---
+
+## 7. Usuarios de prueba
+
+### Administrador general
+
+Usuario:
+
+```text
+admin_demo
+```
+
+Contraseña:
+
+```text
+EcoEnergy2026!
+```
+
+Tiene acceso administrativo completo.
+
+### Administrador organizacional
+
+Usuario:
+
+```text
+admin_organizacion
+```
+
+Contraseña:
+
+```text
+EcoEnergy2026!
+```
+
+Tiene permisos administrativos limitados a su organización, EcoEnergy Chile.
+
+### Usuario de consulta
+
+Usuario:
+
+```text
+consulta
+```
+
+Contraseña:
+
+```text
+EcoEnergy2026!
+```
+
+Tiene permisos de consulta sobre dispositivos y mediciones.
+
+Estas cuentas son exclusivamente para demostración y evaluación.
+
+---
+
+## 8. Ejecutar servidor
+
+```bash
 python manage.py runserver
+```
 
-------------------------------------------------------------------------------------------------
-Estado Actual y Próximos Pasos
-Estado actual: El proyecto se encuentra en su etapa inicial, enfocándose en la configuración base del entorno con Python 3.12.3 y la estructura inicial de Django.
+Ingresar a Django Admin desde:
 
-Próximos pasos:
+```text
+http://127.0.0.1:8000/admin/
+```
 
-Definir los modelos de datos iniciales en las aplicaciones de Django.
+---
 
-Configurar la base de datos de desarrollo.
+## Funcionalidades implementadas
 
-Implementar las primeras rutas y vistas del API o sistema.# Backend-Flex-EcoEnergy
+El sistema incluye:
+
+- Gestión de organizaciones.
+- Gestión de departamentos.
+- Gestión de zonas.
+- Catálogo de dispositivos.
+- Dispositivos instalados.
+- Mediciones de energía.
+- Solicitudes de mantenimiento.
+- Usuarios y perfiles.
+- Grupos y permisos.
+- Scoping de información por organización.
+- Búsqueda, filtros y ordenamiento en Django Admin.
+- Inline de mediciones dentro de dispositivos.
+- Acción personalizada para cambiar el estado de dispositivos.
+- Validación controlada entre departamento y organización.
+- Datos de demostración reproducibles mediante `seed_demo`.
+
+---
+
+## Seguridad por organización
+
+Los usuarios no superusuarios solamente pueden visualizar y administrar información correspondiente a su organización.
+
+Por ejemplo, el usuario:
+
+```text
+admin_organizacion
+```
+
+pertenece a EcoEnergy Chile y no puede visualizar los dispositivos ni las mediciones pertenecientes a EcoEnergy Norte.
+
+---
+
+## Comandos principales
+
+```bash
+python manage.py check
+python manage.py migrate
+python manage.py seed_demo
+python manage.py runserver
+```
