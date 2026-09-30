@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>Solicitudes de mantenimiento</h2>
+
+    <div class="d-flex gap-2">
+
+        {% if perms.maintenance.view_maintenancerequest %}
+            <a
+                href="{% url 'maintenance_export_excel' %}"
+                class="btn btn-success"
+            >
+                Exportar Excel
+            </a>
+        {% endif %}
+
+        {% if perms.maintenance.add_maintenancerequest %}
+            <a
+                href="{% url 'maintenance_create' %}"
+                class="btn btn-primary"
+            >
+                Nueva solicitud
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <!-- SELECTOR 5 / 15 / 30 -->
+            <div class="d-flex justify-content-end align-items-center mb-3">
+                <form method="get" class="d-flex align-items-center gap-2">
+
+                    <label for="per_page" class="form-label mb-0">
+                        Registros por página:
+                    </label>
+
+                    <select
+                        name="per_page"
+                        id="per_page"
+                        class="form-select form-select-sm"
+                        style="width: 80px;"
+                        onchange="this.form.submit()"
+                    >
+                        <option value="5" {% if per_page == 5 %}selected{% endif %}>
+                            5
+                        </option>
+
+                        <option value="15" {% if per_page == 15 %}selected{% endif %}>
+                            15
+                        </option>
+
+                        <option value="30" {% if per_page == 30 %}selected{% endif %}>
+                            30
+                        </option>
+                    </select>
+
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Dispositivo</th>
+                            <th>Organización</th>
+                            <th>Motivo</th>
+                            <th>Prioridad</th>
+                            <th>Estado</th>
+                            <th>Asignado a</th>
+                            <th>Costo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for maintenance in maintenance_requests %}
+
+                            <tr>
+                                <td>
+                                    {{ maintenance.device.internal_name }}
+                                </td>
+
+                                <td>
+                                    {{ maintenance.organization }}
+                                </td>
+
+                                <td>
+                                    {{ maintenance.reason }}
+                                </td>
+
+                                <td>
+                                    {% if maintenance.priority == "low" %}
+                                        Baja
+                                    {% elif maintenance.priority == "medium" %}
+                                        Media
+                                    {% elif maintenance.priority == "high" %}
+                                        Alta
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if maintenance.status == "pending" %}
+                                        Pendiente
+                                    {% elif maintenance.status == "in_progress" %}
+                                        En progreso
+                                    {% elif maintenance.status == "closed" %}
+                                        Cerrada
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if maintenance.assigned_to %}
+                                        {{ maintenance.assigned_to.username }}
+                                    {% else %}
+                                        Sin asignar
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if maintenance.cost %}
+                                        ${{ maintenance.cost }}
+                                    {% else %}
+                                        Sin costo
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if perms.maintenance.change_maintenancerequest %}
+                                        <a
+                                            href="{% url 'maintenance_update' maintenance.pk %}"
+                                            class="btn btn-warning btn-sm"
+                                        >
+                                            Editar
+                                        </a>
+                                    {% endif %}
+
+                                    {% if perms.maintenance.delete_maintenancerequest %}
+                                        <form
+                                            method="post"
+                                            action="{% url 'maintenance_delete' maintenance.pk %}"
+                                            class="d-inline form-eliminar-mantenimiento"
+                                            data-nombre="{{ maintenance.device.internal_name }}"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger btn-sm"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if not perms.maintenance.change_maintenancerequest and not perms.maintenance.delete_maintenancerequest %}
+                                        <span class="text-muted">
+                                            Sin acciones
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">
+                                    No hay solicitudes de mantenimiento registradas.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+
+            <!-- PAGINACIÓN -->
+{% if is_paginated %}
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+    <div class="text-muted">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </div>
+
+    <nav>
+        <ul class="pagination mb-0">
+
+            <!-- PRIMERA -->
+            {% if page_obj.number > 1 %}
+                <li class="page-item">
+                    <a
+                        class="page-link"
+                        href="?page=1&per_page={{ per_page }}"
+                    >
+                        Primera
+                    </a>
+                </li>
+            {% endif %}
+
+            <!-- ANTERIOR -->
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a
+                        class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}"
+                    >
+                        Anterior
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Anterior
+                    </span>
+                </li>
+            {% endif %}
+
+            <!-- PÁGINAS CERCANAS -->
+            {% for numero in page_obj.paginator.page_range %}
+
+                {% if numero >= page_obj.number|add:"-2" and numero <= page_obj.number|add:"2" %}
+
+                    {% if numero == page_obj.number %}
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ numero }}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a
+                                class="page-link"
+                                href="?page={{ numero }}&per_page={{ per_page }}"
+                            >
+                                {{ numero }}
+                            </a>
+                        </li>
+                    {% endif %}
+
+                {% endif %}
+
+            {% endfor %}
+
+            <!-- SIGUIENTE -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a
+                        class="page-link"
+                        href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}"
+                    >
+                        Siguiente
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Siguiente
+                    </span>
+                </li>
+            {% endif %}
+
+            <!-- ÚLTIMA -->
+            {% if page_obj.number < page_obj.paginator.num_pages %}
+                <li class="page-item">
+                    <a
+                        class="page-link"
+                        href="?page={{ page_obj.paginator.num_pages }}&per_page={{ per_page }}"
+                    >
+                        Última
+                    </a>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+</div>
+
+{% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.querySelectorAll(".form-eliminar-mantenimiento").forEach((form) => {
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const nombre = form.dataset.nombre;
+
+        Swal.fire({
+            title: "¿Eliminar solicitud?",
+            text: `Se eliminará la solicitud de "${nombre}" del listado.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+                form.submit();
+            }
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

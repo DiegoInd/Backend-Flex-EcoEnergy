@@ -72,3 +72,18 @@ class UserProfile(BaseModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.organization}"
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="password_reset_codes",
+    )
+    code_hash = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+    failed_attempts = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Recuperación de {self.user.username}"

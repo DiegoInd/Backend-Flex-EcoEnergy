@@ -89,10 +89,14 @@ DATABASES = {
             "DB_ENGINE",
             "django.db.backends.sqlite3"
         ),
-        "NAME": BASE_DIR / os.getenv(
+        "NAME": os.getenv(
             "DB_NAME",
-            "db.sqlite3"
+            str(BASE_DIR / "db.sqlite3")
         ),
+        "USER": os.getenv("DB_USER", ""),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "PORT": os.getenv("DB_PORT", ""),
     }
 }
 
@@ -133,12 +137,31 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Archivos subidos por los usuarios
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# Email
+# https://docs.djangoproject.com/en/6.1/topics/email/
+
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER
+)
+# Autenticación
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "listado_zonas"
+LOGOUT_REDIRECT_URL = "login"

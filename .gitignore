@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+media/
+
+# Archivos temporales de migración
+datos_ecoenergy.json
+datos_ecoenergy_utf8.json
+datos_ecoenergy_corregido.json

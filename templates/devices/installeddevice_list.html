@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Dispositivos - EcoEnergy{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dispositivos instalados</h2>
+
+        {% if perms.devices.add_installeddevice %}
+            <a
+                href="{% url 'installeddevice_create' %}"
+                class="btn btn-success"
+            >
+                Nuevo dispositivo
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Producto</th>
+                            <th>Organización</th>
+                            <th>Zona</th>
+                            <th>Potencia</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for device in devices %}
+                            <tr>
+                                <td>
+                                    {% if device.image %}
+                                        <img
+                                            src="{{ device.image.url }}"
+                                            alt="{{ device.internal_name }}"
+                                            style="
+                                                width: 80px;
+                                                height: 60px;
+                                                object-fit: cover;
+                                                border-radius: 6px;
+                                            "
+                                        >
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Sin imagen
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ device.internal_name }}</td>
+                                <td>{{ device.product }}</td>
+                                <td>{{ device.organization }}</td>
+                                <td>{{ device.zone }}</td>
+                                <td>{{ device.reference_power }}</td>
+                                <td>{{ device.status }}</td>
+                                <td>
+                                {% if perms.devices.change_installeddevice %}
+                                    <a
+                                        href="{% url 'installeddevice_update' device.pk %}"
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Editar
+                                    </a>
+                                {% endif %}
+
+                                {% if perms.devices.delete_installeddevice %}
+                                    <form
+                                        method="post"
+                                        action="{% url 'installeddevice_delete' device.pk %}"
+                                        class="d-inline form-eliminar-dispositivo"
+                                        data-nombre="{{ device.internal_name }}"
+                                    >
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-sm"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                {% if not perms.devices.change_installeddevice and not perms.devices.delete_installeddevice %}
+                                    <span class="text-muted">Sin acciones</span>
+                                {% endif %}
+                            </td>
+                            </tr>
+
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    No hay dispositivos registrados.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.querySelectorAll(".form-eliminar-dispositivo").forEach((form) => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const nombre = form.dataset.nombre;
+
+            Swal.fire({
+                title: "¿Eliminar dispositivo?",
+                text: `Se eliminará "${nombre}" del listado.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

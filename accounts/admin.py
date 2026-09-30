@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
 from .models import Organization, Department, UserProfile
 
 
@@ -38,7 +39,16 @@ class OrganizationAdmin(admin.ModelAdmin):
             return qs.none()
 
         return qs.filter(id=organization.id)
+    def has_add_permission(self, request):
+        if request.user.is_superuser:
+            return True
 
+        return False
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+
+        return False
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -164,6 +174,13 @@ class UserProfileAdmin(admin.ModelAdmin):
             try:
                 organization = request.user.profile.organization
 
+                if db_field.name == "user":
+                    kwargs["queryset"] = User.objects.filter(
+                        is_superuser=False
+                    ).filter(
+                        profile__organization=organization
+                    )
+
                 if db_field.name == "organization":
                     kwargs["queryset"] = Organization.objects.filter(
                         id=organization.id
@@ -175,6 +192,9 @@ class UserProfileAdmin(admin.ModelAdmin):
                     )
 
             except UserProfile.DoesNotExist:
+                if db_field.name == "user":
+                    kwargs["queryset"] = User.objects.none()
+
                 if db_field.name == "organization":
                     kwargs["queryset"] = Organization.objects.none()
 
@@ -186,7 +206,6 @@ class UserProfileAdmin(admin.ModelAdmin):
             request,
             **kwargs
         )
-
     def save_model(self, request, obj, form, change):
         if not request.user.is_superuser:
             try:

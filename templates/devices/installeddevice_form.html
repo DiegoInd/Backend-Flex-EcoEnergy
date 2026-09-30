@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo dispositivo - EcoEnergy{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-header">
+            <h3 class="mb-0">Nuevo dispositivo</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+                            <div class="text-danger mt-1">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        Guardar
+                    </button>
+
+                    <a
+                        href="{% url 'installeddevice_list' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

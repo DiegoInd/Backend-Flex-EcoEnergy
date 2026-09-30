@@ -30,6 +30,10 @@ class InstalledDevice(BaseModel):
     serial_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     reference_power = models.FloatField()
     status = models.CharField(max_length=50, default='active')
-
+    image = models.ImageField(
+    upload_to="devices/",
+    null=True,
+    blank=True,
+)
     def __str__(self):
         return self.internal_name

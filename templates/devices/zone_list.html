@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Zonas</h2>
+
+        {% if perms.devices.add_zone %}
+            <a href="{% url 'zone_create' %}" class="btn btn-primary">
+                Nueva zona
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Organización</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for zone in zones %}
+                            <tr>
+                                <td>{{ zone.name }}</td>
+                                <td>{{ zone.organization }}</td>
+                                <td>
+                                    {{ zone.description|default:"Sin descripción" }}
+                                </td>
+
+                                <td>
+                                    {% if perms.devices.change_zone %}
+                                        <a
+                                            href="{% url 'zone_update' zone.pk %}"
+                                            class="btn btn-warning btn-sm"
+                                        >
+                                            Editar
+                                        </a>
+                                    {% endif %}
+
+                                    {% if perms.devices.delete_zone %}
+                                        <form
+                                            method="post"
+                                            action="{% url 'zone_delete' zone.pk %}"
+                                            class="d-inline form-eliminar-zona"
+                                            data-nombre="{{ zone.name }}"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger btn-sm"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if not perms.devices.change_zone and not perms.devices.delete_zone %}
+                                        <span class="text-muted">
+                                            Sin acciones
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    No hay zonas registradas.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.querySelectorAll(".form-eliminar-zona").forEach((form) => {
+
+    form.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const nombre = form.dataset.nombre;
+
+        Swal.fire({
+            title: "¿Eliminar zona?",
+            text: `Se eliminará "${nombre}" del listado.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+                form.submit();
+            }
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}
