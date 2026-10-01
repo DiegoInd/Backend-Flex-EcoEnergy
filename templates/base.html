@@ -19,38 +19,83 @@
                 EcoEnergy
             </a>
 
-            <div class="navbar-nav ms-auto align-items-center">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarEcoEnergy"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                {% if user.is_authenticated %}
+            <div class="collapse navbar-collapse" id="navbarEcoEnergy">
 
-                    <a class="nav-link" href="{% url 'listado_zonas' %}">
-                        Zonas de Consumo
-                    </a>
+                <div class="navbar-nav ms-auto align-items-lg-center">
 
-                    <a class="nav-link" href="{% url 'resumen_zonas' %}">
-                        Resumen por Zona
-                    </a>
+                    {% if user.is_authenticated %}
 
-                    <span class="navbar-text text-light ms-3 me-3">
-                        <i class="bi bi-person-circle"></i>
-                        {{ user.username }}
-                    </span>
+                        <a class="nav-link" href="{% url 'listado_zonas' %}">
+                            Consumo
+                        </a>
 
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button class="btn btn-outline-danger btn-sm" type="submit">
-                            Cerrar sesión
-                        </button>
-                    </form>
+                        <a class="nav-link" href="{% url 'resumen_zonas' %}">
+                            Resumen
+                        </a>
 
-                {% else %}
+                        {% if perms.accounts.view_organization %}
+                            <a class="nav-link" href="{% url 'organization_list' %}">
+                                Organizaciones
+                            </a>
+                        {% endif %}
 
-                    <a class="btn btn-primary btn-sm" href="{% url 'login' %}">
-                        Ingresar
-                    </a>
+                        {% if perms.devices.view_installeddevice %}
+                            <a class="nav-link" href="{% url 'installeddevice_list' %}">
+                                Dispositivos
+                            </a>
+                        {% endif %}
 
-                {% endif %}
+                        {% if perms.devices.view_zone %}
+                            <a class="nav-link" href="{% url 'zone_list' %}">
+                                Zonas
+                            </a>
+                        {% endif %}
 
+                        {% if perms.maintenance.view_maintenancerequest %}
+                            <a class="nav-link" href="{% url 'maintenance_list' %}">
+                                Mantenimientos
+                            </a>
+                        {% endif %}
+
+                        {% if user.is_staff %}
+                            <a class="nav-link" href="{% url 'admin:index' %}">
+                                Admin
+                            </a>
+                        {% endif %}
+
+                        <span class="navbar-text text-light ms-lg-3 me-lg-3">
+                            <i class="bi bi-person-circle"></i>
+                            {{ user.username }}
+                        </span>
+
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button
+                                class="btn btn-outline-danger btn-sm"
+                                type="submit"
+                            >
+                                Cerrar sesión
+                            </button>
+                        </form>
+
+                    {% else %}
+
+                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">
+                            Ingresar
+                        </a>
+
+                    {% endif %}
+
+                </div>
             </div>
         </div>
     </nav>
