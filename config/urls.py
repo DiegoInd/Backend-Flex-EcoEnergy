@@ -7,9 +7,30 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+# Unidad 3 - Autenticación JWT
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    # Unidad 3 - API REST
+    path("api/", include("api.urls")),
+
+    # Unidad 3 - Tokens JWT
+    path(
+        "api/token/",
+        TokenObtainPairView.as_view(),
+        name="token_obtain_pair",
+    ),
+    path(
+        "api/token/refresh/",
+        TokenRefreshView.as_view(),
+        name="token_refresh",
+    ),
 
     # Autenticación de Django
     path("accounts/", include("django.contrib.auth.urls")),

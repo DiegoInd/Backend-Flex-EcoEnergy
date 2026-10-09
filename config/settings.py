@@ -42,6 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Unidad 3 - API REST
+    'rest_framework',
+    'api',
+
+    # Aplicaciones existentes de EcoEnergy
     'dispositivos',
     'devices',
     'monitoring',
@@ -165,3 +171,18 @@ DEFAULT_FROM_EMAIL = os.getenv(
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "listado_zonas"
 LOGOUT_REDIRECT_URL = "login"
+
+# ==========================================
+# UNIDAD 3 - AUTENTICACIÓN API REST CON JWT
+# ==========================================
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+}

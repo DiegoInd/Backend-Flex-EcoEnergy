@@ -1,97 +1,38 @@
-# Backend-Flex-EcoEnergy
+# EcoEnergy — Evaluación Sumativa 3: API REST con JWT
 
-## Descripción
+Proyecto académico desarrollado con **Django 6.1**, **Django REST Framework**, **Simple JWT** y **MariaDB**. La API REST de la Unidad 3 se incorpora al proyecto web de la Unidad 2 **sin sustituir sus módulos ni migraciones**.
 
-EcoEnergy es una aplicación web desarrollada con Django para administrar organizaciones, departamentos, zonas, dispositivos, mediciones de energía y solicitudes de mantenimiento.
+## 1. Requisitos
 
-El sistema utiliza MariaDB como base de datos e implementa autenticación, recuperación de contraseña, permisos, restricciones de acceso por organización, eliminación lógica, carga de imágenes, paginación y exportación de información a Excel.
+- Python 3.12 o superior (desarrollo y pruebas: Python 3.13).
+- Git y MariaDB Server.
+- Dependencias de `requirements.txt`, incluyendo `djangorestframework==3.18.3` y `djangorestframework-simplejwt==5.5.1`.
+- Apidog para ejecutar y documentar las pruebas de la evaluación.
 
----
+## 2. Instalación en otro computador
 
-# Requisitos
-
-Antes de clonar y ejecutar el proyecto en un computador nuevo se debe tener instalado:
-
-- Git
-- Python 3.12 o superior
-- MariaDB Server
-- pip
-
-Las dependencias de Python utilizadas por el proyecto se instalan automáticamente desde `requirements.txt`.
-
-Entre las principales se encuentran:
-
-- Django 6.1
-- mysqlclient
-- python-dotenv
-- Pillow
-- openpyxl
-
----
-
-# 1. Clonar el repositorio
-
-Abrir Git Bash y ejecutar:
+Clonar el repositorio colaborativo:
 
 ```bash
 git clone https://github.com/DiegoInd/Backend-Flex-EcoEnergy.git
 cd Backend-Flex-EcoEnergy
 ```
 
----
+> **Importante:** verificar que la rama entregada incluya los cambios de la Unidad 3 (`feature/api-rest-jwt`) o que estos se hayan integrado a la rama principal. Clonar por sí solo no garantiza que se obtenga esa rama.
 
-# 2. Crear el entorno virtual
-
-En Windows utilizando Git Bash:
+Crear y activar el entorno virtual en Windows con Git Bash:
 
 ```bash
 python -m venv .venv
-```
-
-Activar el entorno:
-
-```bash
 source .venv/Scripts/activate
-```
-
-Si se utiliza CMD:
-
-```text
-.venv\Scripts\activate
-```
-
-En macOS o Linux:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
----
-
-# 3. Instalar las dependencias
-
-Con el entorno virtual activado ejecutar:
-
-```bash
 pip install -r requirements.txt
 ```
 
-No es necesario instalar Django, Pillow, openpyxl o mysqlclient individualmente si la instalación mediante `requirements.txt` finaliza correctamente.
+En Windows CMD, la activación es `.venv\Scripts\activate`. En macOS/Linux, `source .venv/bin/activate`.
 
----
+### Configuración de MariaDB
 
-# 4. Instalar y preparar MariaDB
-
-MariaDB Server debe estar instalado y ejecutándose en el computador.
-
-El proyecto utiliza una base de datos llamada:
-
-```text
-ecoenergy_db
-```
-
-Ingresar a MariaDB y crear la base de datos:
+Crear una base de datos vacía:
 
 ```sql
 CREATE DATABASE ecoenergy_db
@@ -99,783 +40,215 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
 
-El computador utilizado durante el desarrollo tiene MariaDB configurado en:
+Copiar `.env.example` a `.env` y configurar los valores propios del equipo. Variables utilizadas:
 
-```text
-Host: 127.0.0.1
-Puerto: 3307
-```
-
-Si MariaDB se encuentra configurado en otro puerto, por ejemplo `3306`, solamente se debe cambiar `DB_PORT` en el archivo `.env`.
-
-Cada computador debe utilizar su propia contraseña de MariaDB.
-
----
-
-# 5. Configurar las variables de entorno
-
-El repositorio incluye:
-
-```text
-.env.example
-```
-
-Este archivo sirve como referencia.
-
-Crear en la raíz del proyecto un archivo llamado:
-
-```text
-.env
-```
-
-Utilizar como base:
-
-```env
-SECRET_KEY=tu_clave_secreta_aqui
-
+```dotenv
+SECRET_KEY=una_clave_local_segura
 DB_ENGINE=django.db.backends.mysql
 DB_NAME=ecoenergy_db
 DB_USER=root
-DB_PASSWORD=tu_password_mariadb
+DB_PASSWORD=CONTRASENA_LOCAL_MARIADB
 DB_HOST=127.0.0.1
 DB_PORT=3307
-
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER=tu_correo@gmail.com
-EMAIL_HOST_PASSWORD=tu_password_de_aplicacion
-DEFAULT_FROM_EMAIL=tu_correo@gmail.com
+EMAIL_HOST_USER=CORREO_DE_PRUEBA
+EMAIL_HOST_PASSWORD=CLAVE_DE_APLICACION_LOCAL
+DEFAULT_FROM_EMAIL=CORREO_DE_PRUEBA
 ```
 
-Se deben reemplazar los valores de ejemplo por los correspondientes al computador donde se ejecutará el proyecto.
+El puerto `3307` corresponde a la configuración de desarrollo; si el servidor usa `3306`, modificar `DB_PORT`. **Nunca subir el archivo `.env` ni contraseñas reales de servicios a GitHub.**
 
-El archivo `.env` contiene información privada y NO debe subirse a GitHub.
-
----
-
-# 6. Configuración del correo electrónico
-
-La recuperación de contraseña permite enviar un código de 6 dígitos por correo electrónico.
-
-Para utilizar el envío real mediante Gmail se deben configurar en `.env`:
-
-```env
-EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=tu_correo@gmail.com
-EMAIL_HOST_PASSWORD=tu_password_de_aplicacion
-DEFAULT_FROM_EMAIL=tu_correo@gmail.com
-```
-
-`EMAIL_HOST_PASSWORD` corresponde a una contraseña de aplicación configurada para la cuenta de correo utilizada por el proyecto.
-
-La contraseña de aplicación real no debe almacenarse en GitHub.
-
----
-
-# 7. Aplicar las migraciones
-
-Con MariaDB funcionando y `.env` configurado ejecutar:
+Aplicar migraciones y verificar:
 
 ```bash
 python manage.py migrate
+python manage.py check
+python manage.py runserver
 ```
 
-Comprobar las migraciones:
+Servidor local: `http://127.0.0.1:8000/`. Administración de Django: `http://127.0.0.1:8000/admin/`.
+
+> Las migraciones crean la estructura, **no copian automáticamente** los datos ni las cuentas del computador de desarrollo. En una instalación nueva deben prepararse los datos base y usuarios de demostración antes de ejecutar los comandos de carga.
+
+## 3. API REST — Seis modelos
+
+**URL base:** `http://127.0.0.1:8000/api/`
+
+| Tipo | Modelo | Ruta de lista | Operaciones |
+|---|---|---|---|
+| Principal | `Organization` | `/api/organizations/` | GET, POST, PUT, PATCH, DELETE |
+| Principal | `Zone` | `/api/zones/` | GET, POST, PUT, PATCH, DELETE |
+| Principal | `DeviceProductCatalog` | `/api/device-products/` | GET, POST, PUT, PATCH, DELETE |
+| Principal | `InstalledDevice` | `/api/installed-devices/` | GET, POST, PUT, PATCH, DELETE |
+| Operacional | `MaintenanceRequest` | `/api/maintenance-requests/` | GET lista y detalle |
+| Operacional | `EnergyMeasurement` | `/api/energy-measurements/` | GET lista y detalle |
+
+Para operaciones sobre un registro, añadir su ID: por ejemplo, `GET /api/energy-measurements/1/` o `PATCH /api/organizations/1/`.
+
+Los cuatro modelos principales utilizan `ModelViewSet` y **eliminación lógica**: DELETE marca `deleted_at`, sin borrar físicamente la fila. Los dos operacionales utilizan `ReadOnlyModelViewSet` y no aceptan POST, PUT, PATCH ni DELETE.
+
+## 4. Autenticación JWT
+
+### Obtener access y refresh
+
+**POST** `http://127.0.0.1:8000/api/token/`
+
+```json
+{
+  "username": "consulta",
+  "password": "EcoEnergy#2026"
+}
+```
+
+La respuesta correcta contiene `access` y `refresh`. En Apidog, enviar el token de acceso en cada petición protegida:
+
+```text
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+### Renovar access
+
+**POST** `http://127.0.0.1:8000/api/token/refresh/`
+
+```json
+{
+  "refresh": "<REFRESH_TOKEN>"
+}
+```
+
+Prueba realizada: HTTP **200** y presencia de un nuevo campo `access`.
+
+## 5. Usuarios de demostración y contraseñas
+
+**Solo para la evaluación académica local.** Las siguientes contraseñas se indican para facilitar las pruebas; `admin` y `api_sin_rol` fueron restablecidos mediante `changepassword`. El mensaje de éxito de Django no permite ver qué texto se escribió, así que confirmar el inicio de sesión si alguna credencial no funciona.
+
+| Usuario | Contraseña de prueba prevista | Rol / uso |
+|---|---|---|
+| `admin` | `EcoEnergy#2026Admin` | Superusuario general de Django; administración web |
+| `admin_organizacion` | `EcoEnergy#2026` | Grupo `api_admin`; CRUD de la API |
+| `consulta` | `EcoEnergy#2026` | Grupo `api_operador`; GET en la API |
+| `api_sin_rol` | `EcoEnergy#2026` | Sin grupo; prueba de HTTP 403 |
+
+Los tres usuarios de prueba de roles de API (`admin_organizacion`, `consulta`, `api_sin_rol`) se comprobaron **activos y no superusuarios**. `admin` es una cuenta diferente y conserva el rol de superadministrador de Django.
+
+**Advertencia:** estas credenciales no deben reutilizarse en producción ni en servicios expuestos a Internet. Si este README se publica, las contraseñas también se hacen públicas; cambiarlas o retirarlas antes de un despliegue real.
+
+## 6. Permisos
+
+El permiso personalizado `IsAPIAdminOrReadOnlyOperator` establece:
+
+- **Sin token:** HTTP `401 Unauthorized`.
+- **Usuario sin grupo de API:** HTTP `403 Forbidden`.
+- **`api_operador`:** puede consultar mediante GET; no puede crear, editar ni eliminar (`403` para POST en los modelos principales).
+- **`api_admin`:** puede consultar y realizar CRUD en los cuatro modelos principales.
+- **Endpoints operacionales:** solo GET; POST devuelve `405 Method Not Allowed` incluso para `api_admin`.
+
+## 7. Validaciones
+
+Los serializers comprueban, entre otros aspectos:
+
+- Razón social y nombres de zona con longitud mínima.
+- Fabricante y modelo del producto con longitud mínima.
+- Nombre interno del dispositivo con longitud mínima.
+- `reference_power` mayor que cero.
+- No asignar organización, producto o zona eliminados lógicamente.
+- La zona debe pertenecer a la organización seleccionada.
+
+Los datos inválidos generan HTTP `400 Bad Request`; un recurso inexistente o eliminado lógicamente devuelve `404 Not Found`.
+
+## 8. Paginación
+
+La API utiliza `PageNumberPagination` con **20 registros por página**. Ejemplo:
+
+```text
+GET /api/maintenance-requests/?page=2
+```
+
+La respuesta incluye `count`, `next`, `previous` y `results`. Se comprobó `HTTP 200`, `count = 1000`, `len(results) = 20` y `next` apuntando a `?page=2`.
+
+## 9. Datos de prueba reproducibles
+
+El proyecto conserva el comando de la Unidad 2:
 
 ```bash
+python manage.py seed_data
+```
+
+Este comando prepara datos de demostración, incluidas solicitudes de mantenimiento, según su implementación y los datos base disponibles.
+
+Para la Unidad 3 se agregó:
+
+```bash
+python manage.py cargar_mediciones
+```
+
+Archivo: `monitoring/management/commands/cargar_mediciones.py`.
+
+Crea **1.000 mediciones** asociadas a dispositivos activos existentes, con marcador `seed_u3_demo`. Si detecta una carga previa, evita crearla otra vez. **Requiere que ya existan dispositivos activos.**
+
+### Conteo verificado en la base de desarrollo
+
+| Modelo | Activos |
+|---|---:|
+| Organization | 1 |
+| Zone | 4 |
+| DeviceProductCatalog | 2 |
+| InstalledDevice | 4 |
+| MaintenanceRequest | 1.000 |
+| EnergyMeasurement | 1.003 |
+| **Total** | **2.014** |
+
+Se superó el mínimo de **2.000 registros activos**. Este conteo corresponde a la base de datos de desarrollo; no implica que un clon nuevo ya incluya esos registros.
+
+## 10. Pruebas HTTP realizadas
+
+| Código | Caso |
+|---|---|
+| `200 OK` | GET de listas y detalles; PATCH correcto; refresh JWT |
+| `201 Created` | POST válido de modelo principal |
+| `204 No Content` | DELETE lógico de modelo principal |
+| `400 Bad Request` | Validaciones de campos y relaciones |
+| `401 Unauthorized` | Solicitud sin JWT |
+| `403 Forbidden` | Usuario sin rol o escritura por operador |
+| `404 Not Found` | Registro inexistente o eliminado lógicamente |
+| `405 Method Not Allowed` | POST en `energy-measurements` con administrador |
+
+Se verificaron la paginación, las tres cuentas de prueba de roles, los **2.014 registros activos** y la prevención de duplicados del comando de mediciones.
+
+## 11. Apidog — Evidencias de evaluación
+
+La colección y las capturas de Apidog **aún están pendientes de preparar**. Deben incluir:
+
+1. Obtención y renovación de JWT.
+2. GET lista y detalle de los seis modelos.
+3. POST, PATCH/PUT y DELETE de los cuatro modelos principales.
+4. Errores `400`, `401`, `403`, `404` y `405`, según corresponda.
+5. Paginación y respuestas de datos.
+6. Exportación de la colección y evidencias solicitadas por el docente.
+
+## 12. Comandos de comprobación
+
+```bash
+python manage.py check
 python manage.py showmigrations
-```
-
-Luego verificar el proyecto:
-
-```bash
-python manage.py check
-```
-
-El resultado esperado es:
-
-```text
-System check identified no issues (0 silenced).
-```
-
----
-
-# 8. Generar datos de prueba
-
-El proyecto incluye un Management Command para generar 1000 solicitudes de mantenimiento utilizadas durante las pruebas y evaluación del sistema.
-
-Antes de ejecutar este comando deben existir los datos base del sistema, incluyendo una organización activa.
-
-Ejecutar:
-
-```bash
-python manage.py seed_data
-```
-
-El comando genera 1000 solicitudes de mantenimiento para comprobar:
-
-- Paginación.
-- Consultas.
-- Permisos.
-- Restricción por organización.
-- Exportación de información a Excel.
-
-El comando utiliza `get_or_create`, por lo que si los registros de prueba ya existen no vuelve a duplicarlos.
-
-El comando también crea, cuando sea necesario, la zona, el producto y el dispositivo utilizados para generar los mantenimientos de prueba.
-
-Los usuarios de demostración se configuran de forma independiente y no son creados actualmente por `seed_data`.
-
-# 9. Ejecutar el proyecto
-
-Ejecutar:
-
-```bash
 python manage.py runserver
 ```
 
-Luego abrir:
-
-```text
-http://127.0.0.1:8000/
-```
-
-La aplicación principal de zonas se encuentra en:
-
-```text
-http://127.0.0.1:8000/zonas/
-```
-
-Django Admin:
-
-```text
-http://127.0.0.1:8000/admin/
-```
-
----
-
-# Usuarios y rutas para la evaluación
-
-El proyecto utiliza tres usuarios de demostración para comprobar los diferentes niveles de acceso y permisos.
-
-Estas credenciales corresponden exclusivamente al proyecto académico.
-
----
-
-## 1. Administrador general
-
-```text
-Usuario: admin
-Contraseña: EcoEnergy#2026Admin
-```
-
-Corresponde al superusuario y posee acceso completo al sistema.
-
-### Rutas para probar
-
-Django Admin:
-
-```text
-http://127.0.0.1:8000/admin/
-```
-
-Aplicación principal:
-
-```text
-http://127.0.0.1:8000/zonas/
-```
-
-Organizaciones:
-
-```text
-http://127.0.0.1:8000/accounts/organizations/
-```
-
-Crear organización:
-
-```text
-http://127.0.0.1:8000/accounts/organizations/create/
-```
-
-Dispositivos instalados:
-
-```text
-http://127.0.0.1:8000/devices/
-```
-
-Crear dispositivo:
-
-```text
-http://127.0.0.1:8000/devices/create/
-```
-
-Zonas:
-
-```text
-http://127.0.0.1:8000/devices/zones/
-```
-
-Crear zona:
-
-```text
-http://127.0.0.1:8000/devices/zones/create/
-```
-
-Solicitudes de mantenimiento:
-
-```text
-http://127.0.0.1:8000/maintenance/
-```
-
-Crear mantenimiento:
-
-```text
-http://127.0.0.1:8000/maintenance/create/
-```
-
-Exportar mantenimientos a Excel:
-
-```text
-http://127.0.0.1:8000/maintenance/export/excel/
-```
-
----
-
-## 2. Administrador de organización
-
-```text
-Usuario: admin_organizacion
-Contraseña: EcoEnergy#2026
-```
-
-Posee permisos administrativos sobre la información autorizada de su organización.
-
-Los QuerySets y formularios restringen los datos disponibles según la organización asociada al usuario.
-
-### Rutas para probar
-
-Aplicación principal:
-
-```text
-http://127.0.0.1:8000/zonas/
-```
-
-Organizaciones:
-
-```text
-http://127.0.0.1:8000/accounts/organizations/
-```
-
-Dispositivos:
-
-```text
-http://127.0.0.1:8000/devices/
-```
-
-Crear dispositivo:
-
-```text
-http://127.0.0.1:8000/devices/create/
-```
-
-Zonas:
-
-```text
-http://127.0.0.1:8000/devices/zones/
-```
-
-Crear zona:
-
-```text
-http://127.0.0.1:8000/devices/zones/create/
-```
-
-Mantenimientos:
-
-```text
-http://127.0.0.1:8000/maintenance/
-```
-
-Crear mantenimiento:
-
-```text
-http://127.0.0.1:8000/maintenance/create/
-```
-
-Exportar mantenimientos a Excel:
-
-```text
-http://127.0.0.1:8000/maintenance/export/excel/
-```
-
-Los registros disponibles para este usuario se encuentran restringidos a su organización.
-
----
-
-## 3. Usuario de consulta
-
-```text
-Usuario: consulta
-Contraseña: EcoEnergy#2026
-```
-
-Posee permisos limitados de consulta.
-
-### Rutas para probar
-
-Aplicación principal:
-
-```text
-http://127.0.0.1:8000/zonas/
-```
-
-Solicitudes de mantenimiento:
-
-```text
-http://127.0.0.1:8000/maintenance/
-```
-
-Exportar mantenimientos a Excel:
-
-```text
-http://127.0.0.1:8000/maintenance/export/excel/
-```
-
-En solicitudes de mantenimiento puede visualizar los registros autorizados y utilizar la exportación a Excel.
-
-No puede crear, editar ni eliminar solicitudes de mantenimiento.
-
-Si intenta acceder directamente a una operación para la cual no posee permiso, el sistema rechaza el acceso.
-
----
-
-# Recuperación de contraseña
-
-La recuperación se encuentra disponible en:
-
-```text
-http://127.0.0.1:8000/accounts/password-reset/
-```
-
-El proceso consiste en:
-
-1. Ingresar el correo registrado.
-2. Generar un código aleatorio de 6 dígitos.
-3. Enviar el código al correo electrónico.
-4. Verificar el código ingresado.
-5. Validar su tiempo de expiración.
-6. Establecer una nueva contraseña.
-7. Invalidar el código utilizado.
-
-El sistema también controla intentos fallidos y requisitos mínimos de seguridad de la nueva contraseña.
-
----
-
-# CRUD implementados
-
-El proyecto posee cuatro CRUD principales desarrollados para la aplicación.
-
-## Organizaciones
-
-Permite:
-
-- Crear.
-- Listar.
-- Editar.
-- Eliminar lógicamente.
-
-Ruta:
-
-```text
-/accounts/organizations/
-```
-
-## Dispositivos instalados
-
-Permite:
-
-- Crear.
-- Listar.
-- Editar.
-- Eliminar lógicamente.
-- Cargar imágenes.
-
-Ruta:
-
-```text
-/devices/
-```
-
-## Zonas
-
-Permite:
-
-- Crear.
-- Listar.
-- Editar.
-- Eliminar lógicamente.
-
-Ruta:
-
-```text
-/devices/zones/
-```
-
-## Solicitudes de mantenimiento
-
-Permite:
-
-- Crear.
-- Listar.
-- Editar.
-- Eliminar lógicamente.
-- Paginar registros.
-- Exportar información a Excel.
-
-Ruta:
-
-```text
-/maintenance/
-```
-
----
-
-# Funcionalidades implementadas
-
-El sistema incluye:
-
-- Inicio de sesión.
-- Cierre de sesión.
-- Recuperación de contraseña.
-- Código de recuperación de 6 dígitos.
-- Envío de correo mediante SMTP.
-- Usuarios y perfiles.
-- Grupos y permisos.
-- Restricción de información por organización.
-- CRUD de organizaciones.
-- CRUD de zonas.
-- CRUD de dispositivos instalados.
-- CRUD de solicitudes de mantenimiento.
-- Gestión de departamentos.
-- Catálogo de dispositivos.
-- Mediciones de energía.
-- Eliminación lógica.
-- Validaciones del lado del servidor.
-- Django Forms y ModelForm.
-- Carga de imágenes.
-- Validación de imágenes mediante Pillow.
-- Paginación.
-- Persistencia de registros por página mediante sesión.
-- SweetAlert2 para confirmaciones.
-- Exportación Excel.
-- Django Admin.
-- Datos de prueba reproducibles.
-
----
-
-# Eliminación lógica
-
-Las entidades que requieren eliminación lógica utilizan:
-
-```text
-deleted_at
-```
-
-Los registros no son eliminados físicamente durante el flujo normal de la aplicación.
-
-Al eliminar un registro se establece su fecha de eliminación y deja de aparecer en los listados activos.
-
----
-
-# Seguridad y permisos
-
-Las vistas protegidas requieren autenticación y los permisos correspondientes.
-
-El sistema utiliza permisos de Django para controlar operaciones como:
-
-- Visualizar.
-- Crear.
-- Modificar.
-- Eliminar.
-
-Además, los usuarios que no son superusuarios tienen restringida la información según su organización.
-
-Por ejemplo, `admin_organizacion` solamente puede trabajar con los registros autorizados pertenecientes a su organización.
-
-El usuario `consulta` posee permisos limitados de visualización.
-
----
-
-# Imágenes de dispositivos
-
-Los dispositivos instalados permiten cargar imágenes.
-
-El sistema valida:
-
-- JPG.
-- JPEG.
-- PNG.
-- Tamaño máximo de 5 MB.
-- Contenido real de la imagen mediante Pillow.
-
-Los archivos cargados por los usuarios se almacenan en:
-
-```text
-media/
-```
-
-La carpeta `media/` no se versiona en GitHub.
-
----
-
-# Paginación
-
-El listado de solicitudes de mantenimiento permite seleccionar:
-
-```text
-5
-15
-30
-```
-
-registros por página.
-
-La selección realizada por el usuario se conserva mediante la sesión.
-
----
-
-# Exportación Excel
-
-Las solicitudes de mantenimiento pueden exportarse en formato:
-
-```text
-.xlsx
-```
-
-La funcionalidad utiliza `openpyxl`.
-
-La exportación respeta:
-
-- Los permisos del usuario.
-- La organización correspondiente.
-- Los registros activos.
-- La eliminación lógica.
-
-Ruta:
-
-```text
-http://127.0.0.1:8000/maintenance/export/excel/
-```
-
----
-
-# Base de datos
-
-El proyecto utiliza MariaDB.
-
-La configuración de conexión se obtiene desde variables de entorno.
-
-Las tablas del sistema son creadas mediante las migraciones de Django:
-
-```bash
-python manage.py migrate
-```
-
-Esto permite reconstruir la estructura de la base de datos en otro computador sin copiar manualmente la base utilizada durante el desarrollo.
-
----
-
-# Archivos que no se suben a GitHub
-
-El proyecto utiliza `.gitignore` para evitar versionar archivos privados o generados localmente.
-
-Entre ellos:
-
-```text
-.env
-db.sqlite3
-db.sqlite3-journal
-media/
-.venv/
-venv/
-env/
-__pycache__/
-datos_ecoenergy.json
-datos_ecoenergy_utf8.json
-datos_ecoenergy_corregido.json
-```
-
-El archivo:
-
-```text
-.env.example
-```
-
-sí debe mantenerse en GitHub porque sirve como referencia para configurar el proyecto en otro computador.
-
----
-
-# Comandos principales
-
-Comprobar el proyecto:
-
-```bash
-python manage.py check
-```
-
-Aplicar migraciones:
-
-```bash
-python manage.py migrate
-```
-
-Mostrar migraciones:
-
-```bash
-python manage.py showmigrations
-```
-
-Generar datos de prueba:
-
-```bash
-python manage.py seed_data
-```
-
-Ejecutar el servidor:
-
-```bash
-python manage.py runserver
-```
-
----
-
-# Tecnologías utilizadas
-
-- Python
-- Django 6.1
-- MariaDB
-- mysqlclient
-- python-dotenv
-- Pillow
-- openpyxl
-- Bootstrap
-- SweetAlert2
-- Git
-- GitHub
-
----
-
-# Instalación completa en otro computador
-
-Para levantar el proyecto desde cero en otro computador:
-
-## Paso 1 — Instalar programas necesarios
-
-Instalar:
-
-```text
-Git
-Python 3.12 o superior
-MariaDB Server
-```
-
-## Paso 2 — Clonar el proyecto
-
-Desde Git Bash:
-
-```bash
-git clone https://github.com/DiegoInd/Backend-Flex-EcoEnergy.git
-cd Backend-Flex-EcoEnergy
-```
-
-## Paso 3 — Crear el entorno virtual
-
-```bash
-python -m venv .venv
-source .venv/Scripts/activate
-```
-
-## Paso 4 — Instalar las dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-## Paso 5 — Crear la base de datos
-
-En MariaDB crear:
-
-```sql
-CREATE DATABASE ecoenergy_db
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-```
-
-## Paso 6 — Crear `.env`
-
-Copiar la estructura de:
-
-```text
-.env.example
-```
-
-y crear:
-
-```text
-.env
-```
-
-Configurar principalmente:
-
-```text
-DB_NAME
-DB_USER
-DB_PASSWORD
-DB_HOST
-DB_PORT
-```
-
-Si se utilizará recuperación de contraseña mediante correo real, también configurar las variables `EMAIL_*`.
-
-## Paso 7 — Crear las tablas
-
-```bash
-python manage.py migrate
-```
-
-## Paso 8 — Generar datos de demostración
-
-```bash
-python manage.py seed_data
-```
-
-## Paso 9 — Verificar el proyecto
-
-```bash
-python manage.py check
-```
-
-Resultado esperado:
-
-```text
-System check identified no issues (0 silenced).
-```
-
-## Paso 10 — Ejecutar
-
-```bash
-python manage.py runserver
-```
-
-Abrir:
-
-```text
-http://127.0.0.1:8000/
-```
-
-Para probar directamente los módulos se pueden utilizar las rutas indicadas anteriormente para cada usuario.
+Para verificar el conteo de datos se puede utilizar `python manage.py shell` y consultar los modelos activos (`deleted_at__isnull=True`).
+
+## 13. Archivos importantes
+
+- `config/settings.py`: Django REST Framework, JWT y paginación.
+- `config/urls.py`: rutas generales y tokens.
+- `api/urls.py`: rutas REST.
+- `api/views.py`: ViewSets y eliminación lógica.
+- `api/serializers.py`: campos y validaciones.
+- `api/permissions.py`: autorización por grupos.
+- `monitoring/management/commands/cargar_mediciones.py`: carga reproducible.
+- `requirements.txt`: dependencias.
+- `.env.example`: plantilla de configuración sin secretos reales.
+
+**Nota:** el proyecto web original de la Unidad 2 sigue presente; este README prioriza las rutas REST que se evaluarán en la Unidad 3.
